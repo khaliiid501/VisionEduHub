@@ -1,0 +1,19 @@
+{
+  "name": "vision-edu-hub-prototype",
+  "version": "0.1.0",
+  "description": "VisionEduHub - Smart Teacher's Assistant prototype",
+  "type": "module",
+  "main": "src/server/index.js",
+  "scripts": {
+    "start": "node src/server/index.js",
+    "dev": "node --watch src/server/index.js",
+    "pdf": "python3 scripts/generate_architecture_pdf.py"
+  },
+  "keywords": [
+    "education",
+    "arabic-nlp",
+    "dashboard",
+    "prototype"
+  ],
+  "license": "MIT"
+}

@@ -1,0 +1,140 @@
+%PDF-1.4
+%‚„œ”
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [ 5 0 R 7 0 R ] /Count 2 >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+4 0 obj
+<< /Length 2015 >>
+stream
+BT
+/F1 11 Tf
+14 TL
+50 790 Td
+(VisionEduHub - Architecture and Deployment Brief) Tj
+T*
+(Generated: 2026-03-01 20:47 UTC) Tj
+T*
+() Tj
+T*
+(1\) Product Intent) Tj
+T*
+(- Arabic-first Smart Teacher's Assistant for classroom writing quality.) Tj
+T*
+(- Detect grammar/spelling issues and rhetoric weaknesses.) Tj
+T*
+(- Return improved draft plus creative alternatives.) Tj
+T*
+() Tj
+T*
+(2\) Recommended MVP Stack) Tj
+T*
+(- Frontend: RTL dashboard \(Liquid Glass and Spatial UI direction\).) Tj
+T*
+(- Backend: Node.js API with isolated analyzer module.) Tj
+T*
+(- Data: PostgreSQL schema with typed enums and indexed analytics.) Tj
+T*
+(- AI: Optional OpenAI augmentation; rule-based fallback is always available.) Tj
+T*
+() Tj
+T*
+(3\) Layered Architecture) Tj
+T*
+(- Presentation Layer: src/client/*) Tj
+T*
+(- Application Layer: src/server/index.js) Tj
+T*
+(- NLP and AI Layer: src/server/analyzer.js) Tj
+T*
+(- Data Layer: database/schema.sql) Tj
+T*
+() Tj
+T*
+(4\) Database Highlights) Tj
+T*
+(- Core tables: users, lessons, analytics.) Tj
+T*
+(- Extended MVP tables: lesson_enrollments, student_submissions.) Tj
+T*
+(- Governance: constraints, timestamps, indexes, RLS enabled.) Tj
+T*
+() Tj
+T*
+(5\) Security Controls) Tj
+T*
+(- Role segmentation \(admin, teacher, student\).) Tj
+T*
+(- Input length limits and strict JSON parsing.) Tj
+T*
+(- Minimal PII in analytics payloads.) Tj
+T*
+(- Ready for JWT auth and tenant-scoped RLS policies.) Tj
+T*
+() Tj
+T*
+(6\) Scalability Plan) Tj
+T*
+(- Add async workers for heavy analysis workloads.) Tj
+T*
+(- Partition analytics by time windows.) Tj
+T*
+(- Add Redis counters and read replicas for dashboards.) Tj
+T*
+() Tj
+T*
+(7\) Deployment Steps) Tj
+T*
+(1. Install runtime dependencies and start API service.) Tj
+T*
+(2. Provision PostgreSQL and apply database/schema.sql.) Tj
+T*
+(3. Set env vars: PORT, OPENAI_API_KEY \(optional\).) Tj
+T*
+(4. Configure reverse proxy, TLS, and observability.) Tj
+T*
+(5. Run smoke checks for /api/health and /api/analyze-text.) Tj
+T*
+() Tj
+T*
+(Output artifact:) Tj
+ET
+endstream
+endobj
+5 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R >> >> /Contents 4 0 R >>
+endobj
+6 0 obj
+<< /Length 88 >>
+stream
+BT
+/F1 11 Tf
+14 TL
+50 790 Td
+(output/pdf/visioneduhub-architecture-deployment.pdf) Tj
+ET
+endstream
+endobj
+7 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R >> >> /Contents 6 0 R >>
+endobj
+xref
+0 8
+0000000000 65535 f 
+0000000015 00000 n 
+0000000064 00000 n 
+0000000129 00000 n 
+0000000199 00000 n 
+0000002266 00000 n 
+0000002392 00000 n 
+0000002530 00000 n 
+trailer
+<< /Size 8 /Root 1 0 R >>
+startxref
+2656
+%%EOF

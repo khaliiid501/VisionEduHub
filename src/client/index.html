@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VisionEduHub | Smart Teacher's Assistant</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Changa:wght@600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="background-orb orb-a"></div>
+    <div class="background-orb orb-b"></div>
+    <div class="background-grid"></div>
+
+    <main class="layout-shell">
+      <aside class="side-panel glass-card spatial-depth">
+        <div class="brand">
+          <span class="brand-badge">VEH</span>
+          <div>
+            <h1>VisionEduHub</h1>
+            <p>Smart Teacher's Assistant</p>
+          </div>
+        </div>
+
+        <nav class="menu">
+          <button class="menu-item active">لوحة القيادة</button>
+          <button class="menu-item">تحليل النصوص</button>
+          <button class="menu-item">الدروس الذكية</button>
+          <button class="menu-item">تحليلات الأداء</button>
+        </nav>
+
+        <section class="insight-box">
+          <h2>مؤشر المنصة</h2>
+          <p>تحسين جودة الكتابة الأكاديمية عبر تحليل نحوي وبلاغي فوري.</p>
+        </section>
+      </aside>
+
+      <section class="dashboard-area">
+        <header class="hero glass-card spatial-depth">
+          <div>
+            <p class="hero-kicker">منصة تعليمية غامرة</p>
+            <h2>مساعد المعلم الذكي لتحسين الكتابة العربية</h2>
+            <p>
+              هذا النموذج الأولي يمزج بين تحليل اللغة العربية، قياس جودة النص، واقتراح بدائل إبداعية
+              قابلة للاستخدام داخل الصف.
+            </p>
+          </div>
+          <div class="hero-stat-grid">
+            <article class="metric-tile">
+              <span>دقة القراءة</span>
+              <strong id="readabilityMetric">-</strong>
+            </article>
+            <article class="metric-tile">
+              <span>الإبداع البلاغي</span>
+              <strong id="creativityMetric">-</strong>
+            </article>
+            <article class="metric-tile">
+              <span>أخطاء نحوية</span>
+              <strong id="grammarMetric">-</strong>
+            </article>
+            <article class="metric-tile">
+              <span>ملاحظات بلاغية</span>
+              <strong id="rhetoricMetric">-</strong>
+            </article>
+          </div>
+        </header>
+
+        <section class="workspace-grid">
+          <article class="glass-card spatial-depth panel-form">
+            <h3>محلل نص الطالب</h3>
+            <p class="panel-subtitle">أدخل نصًا عربيًا وسنقدّم تشخيصًا دقيقًا مع بدائل صياغية.</p>
+
+            <form id="analyzerForm">
+              <label for="topicInput">موضوع النص</label>
+              <input id="topicInput" name="topic" type="text" value="التعلم النشط" />
+
+              <label for="gradeLevelInput">المرحلة الدراسية</label>
+              <select id="gradeLevelInput" name="gradeLevel">
+                <option value="ابتدائي">ابتدائي</option>
+                <option value="متوسط" selected>متوسط</option>
+                <option value="ثانوي">ثانوي</option>
+                <option value="جامعي">جامعي</option>
+              </select>
+
+              <label for="textInput">نص الطالب</label>
+              <textarea
+                id="textInput"
+                name="text"
+                rows="8"
+                placeholder="اكتب نص الطالب هنا..."
+              >في هذا الموضوع سوف اتحدث عن اهمية القراءة و ان القراءة مهمة جدا جدا للطالب لانها تساعده على الفهم و التعلم و النجاح في المدرسة</textarea>
+
+              <div class="form-actions">
+                <button type="button" class="ghost" id="sampleBtn">تجربة نص آخر</button>
+                <button type="submit" class="primary" id="analyzeBtn">تحليل النص الآن</button>
+              </div>
+            </form>
+
+            <p id="statusText" class="status-text">جاهز للتحليل.</p>
+          </article>
+
+          <article class="glass-card spatial-depth panel-results">
+            <h3>نتائج التحليل الذكي</h3>
+            <div class="result-block">
+              <h4>الأخطاء المكتشفة</h4>
+              <ul id="issuesList" class="issues-list"></ul>
+            </div>
+
+            <div class="result-block">
+              <h4>النص المقترح بعد التحسين</h4>
+              <p id="improvedDraft" class="improved-draft">-</p>
+            </div>
+
+            <div class="result-block">
+              <h4>بدائل إبداعية</h4>
+              <ul id="creativeList" class="creative-list"></ul>
+            </div>
+          </article>
+        </section>
+      </section>
+    </main>
+
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>
