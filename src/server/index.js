@@ -1,4 +1,8 @@
-import { createServer } from "node:http";
+import express from "express";
+import cors from "cors";
+import helmet from "helmet";
+import rateLimit from "express-rate-limit";
+import { z } from "zod";
 import { readFile } from "node:fs/promises";
 import { extname, resolve } from "node:path";
 import { analyzeArabicStudentText } from "./analyzer.js";
@@ -15,130 +19,96 @@ const MIME_TYPES = {
   ".svg": "image/svg+xml"
 };
 
-function sendJson(res, statusCode, payload) {
-  res.writeHead(statusCode, {
-    "Content-Type": "application/json; charset=utf-8"
-  });
-  res.end(JSON.stringify(payload, null, 2));
-}
+const analyzeSchema = z.object({
+  text: z
+    .string({ required_error: "حقل النص مطلوب." })
+    .min(20, "الرجاء إدخال نص عربي أطول (20 حرفًا على الأقل).")
+    .max(5000, "النص طويل جدًا. الحد الأقصى هو 5000 حرف."),
+  topic: z.string().max(100).optional().default("عام"),
+  gradeLevel: z.enum(["ابتدائي", "متوسط", "ثانوي", "جامعي"]).optional().default("متوسط")
+});
 
-async function parseJsonBody(req) {
-  const chunks = [];
+const app = express();
 
-  for await (const chunk of req) {
-    chunks.push(chunk);
-  }
+app.use(helmet());
+app.use(cors({ origin: process.env.ALLOWED_ORIGIN || "*" }));
+app.use(express.json({ limit: "50kb" }));
 
-  if (chunks.length === 0) {
-    return {};
-  }
+const analyzeLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 20,
+  message: {
+    error: "RATE_LIMIT_EXCEEDED",
+    message: "تجاوزت الحد المسموح به. حاول مجددًا بعد دقيقة."
+  },
+  standardHeaders: true,
+  legacyHeaders: false
+});
 
-  const raw = Buffer.concat(chunks).toString("utf8");
-
-  try {
-    return JSON.parse(raw);
-  } catch {
-    return null;
-  }
-}
-
-async function serveStaticAsset(pathname, res) {
-  const requestedPath = pathname === "/" ? "/index.html" : pathname;
-  const safeFilePath = resolve(CLIENT_ROOT, `.${requestedPath}`);
-
-  if (!safeFilePath.startsWith(CLIENT_ROOT)) {
-    sendJson(res, 403, {
-      error: "FORBIDDEN_PATH",
-      message: "المسار المطلوب غير مسموح به."
-    });
-    return;
-  }
-
-  try {
-    const fileContent = await readFile(safeFilePath);
-    const extension = extname(safeFilePath);
-
-    res.writeHead(200, {
-      "Content-Type": MIME_TYPES[extension] || "application/octet-stream"
-    });
-    res.end(fileContent);
-  } catch {
-    sendJson(res, 404, {
-      error: "NOT_FOUND",
-      message: "الملف المطلوب غير موجود."
-    });
-  }
-}
-
-async function handleAnalyzeRequest(req, res) {
-  const body = await parseJsonBody(req);
-
-  if (body === null) {
-    sendJson(res, 400, {
-      error: "INVALID_JSON",
-      message: "صيغة JSON غير صحيحة."
-    });
-    return;
-  }
-
-  const text = typeof body.text === "string" ? body.text.trim() : "";
-  const topic = typeof body.topic === "string" ? body.topic.trim() : "عام";
-  const gradeLevel = typeof body.gradeLevel === "string" ? body.gradeLevel.trim() : "متوسط";
-
-  if (text.length < 20) {
-    sendJson(res, 422, {
-      error: "TEXT_TOO_SHORT",
-      message: "الرجاء إدخال نص عربي أطول (20 حرفًا على الأقل)."
-    });
-    return;
-  }
-
-  if (text.length > 5000) {
-    sendJson(res, 422, {
-      error: "TEXT_TOO_LONG",
-      message: "النص طويل جدًا للنموذج الأولي. الحد الأقصى هو 5000 حرف."
-    });
-    return;
-  }
-
-  const result = await analyzeArabicStudentText({
-    text,
-    topic,
-    gradeLevel,
-    enableLlm: true
-  });
-
-  sendJson(res, 200, result);
-}
-
-const server = createServer(async (req, res) => {
-  const url = new URL(req.url || "/", `http://${req.headers.host || "localhost"}`);
-
-  if (url.pathname === "/api/health" && req.method === "GET") {
-    sendJson(res, 200, {
-      service: "VisionEduHub Smart Teacher's Assistant",
-      status: "ok",
-      timestamp: new Date().toISOString()
-    });
-    return;
-  }
-
-  if (url.pathname === "/api/analyze-text" && req.method === "POST") {
-    await handleAnalyzeRequest(req, res);
-    return;
-  }
-
-  if (req.method === "GET") {
-    await serveStaticAsset(url.pathname, res);
-    return;
-  }
-
-  sendJson(res, 405, {
-    error: "METHOD_NOT_ALLOWED",
-    message: "الطريقة المطلوبة غير مدعومة لهذا المسار."
+app.get("/api/health", (_req, res) => {
+  res.json({
+    service: "VisionEduHub Smart Teacher's Assistant",
+    status: "ok",
+    version: "2.0.0",
+    timestamp: new Date().toISOString()
   });
 });
 
-server.listen(PORT, HOST, () => {
+app.post("/api/analyze-text", analyzeLimiter, async (req, res) => {
+  const parsed = analyzeSchema.safeParse(req.body);
+
+  if (!parsed.success) {
+    const firstError = parsed.error.errors[0];
+    return res.status(422).json({
+      error: "VALIDATION_ERROR",
+      field: firstError.path[0] || "unknown",
+      message: firstError.message
+    });
+  }
+
+  const { text, topic, gradeLevel } = parsed.data;
+
+  try {
+    const result = await analyzeArabicStudentText({
+      text,
+      topic,
+      gradeLevel,
+      enableLlm: true
+    });
+
+    return res.json(result);
+  } catch (err) {
+    console.error("[analyzer] error:", err);
+    return res.status(500).json({
+      error: "ANALYSIS_FAILED",
+      message: "حدث خطأ أثناء تحليل النص. حاول مجددًا."
+    });
+  }
+});
+
+app.use(async (req, res) => {
+  const safePath = req.path === "/" ? "/index.html" : req.path;
+  const filePath = resolve(CLIENT_ROOT, `.${safePath}`);
+
+  if (!filePath.startsWith(CLIENT_ROOT)) {
+    return res.status(403).json({ error: "FORBIDDEN_PATH", message: "المسار غير مسموح به." });
+  }
+
+  try {
+    const content = await readFile(filePath);
+    const ext = extname(filePath);
+    res.setHeader("Content-Type", MIME_TYPES[ext] || "application/octet-stream");
+    return res.end(content);
+  } catch {
+    return res.status(404).json({ error: "NOT_FOUND", message: "الملف غير موجود." });
+  }
+});
+
+app.use((err, _req, res, _next) => {
+  console.error("[server] unhandled error:", err);
+  res.status(500).json({ error: "INTERNAL_ERROR", message: "خطأ داخلي في الخادم." });
+});
+
+app.listen(PORT, HOST, () => {
   console.log(`VisionEduHub server running on http://${HOST}:${PORT}`);
 });

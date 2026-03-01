@@ -1,19 +1,26 @@
 {
-  "name": "vision-edu-hub-prototype",
-  "version": "0.1.0",
-  "description": "VisionEduHub - Smart Teacher's Assistant prototype",
+  "name": "visioneduhub",
+  "version": "2.0.0",
+  "description": "Smart Arabic Teacher Assistant - analyze student writing with rule-based NLP + optional AI",
   "type": "module",
-  "main": "src/server/index.js",
   "scripts": {
     "start": "node src/server/index.js",
     "dev": "node --watch src/server/index.js",
-    "pdf": "python3 scripts/generate_architecture_pdf.py"
+    "pdf": "python3 scripts/generate_architecture_pdf.py",
+    "lint": "eslint src --ext .js",
+    "test": "node --experimental-vm-modules node_modules/.bin/jest"
   },
-  "keywords": [
-    "education",
-    "arabic-nlp",
-    "dashboard",
-    "prototype"
-  ],
-  "license": "MIT"
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "express-rate-limit": "^7.5.0",
+    "helmet": "^8.0.0",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
+  }
 }
